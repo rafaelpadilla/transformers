@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from . import (
+    bliva,
     albert,
     align,
     altclip,

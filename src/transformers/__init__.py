@@ -128,6 +128,7 @@ _import_structure = {
     ],
     "models": [],
     # Models
+    "models.bliva": ["BLIVA_PRETRAINED_CONFIG_ARCHIVE_MAP", "BlivaConfig", "BlivaTokenizer"],
     "models.albert": ["ALBERT_PRETRAINED_CONFIG_ARCHIVE_MAP", "AlbertConfig"],
     "models.align": [
         "ALIGN_PRETRAINED_CONFIG_ARCHIVE_MAP",
@@ -804,6 +805,7 @@ except OptionalDependencyNotAvailable:
     ]
 else:
     # Fast tokenizers structure
+    _import_structure["models.bliva"].append("BlivaTokenizerFast")
     _import_structure["models.albert"].append("AlbertTokenizerFast")
     _import_structure["models.bart"].append("BartTokenizerFast")
     _import_structure["models.barthez"].append("BarthezTokenizerFast")
@@ -1056,6 +1058,18 @@ else:
     _import_structure["modeling_utils"] = ["PreTrainedModel"]
 
     # PyTorch models structure
+
+    _import_structure["models.bliva"].extend(
+        [
+            "BLIVA_PRETRAINED_MODEL_ARCHIVE_LIST",
+            "BlivaForCausalLM",
+            "BlivaForConditionalGeneration",
+            "BlivaForQuestionAnswering",
+            "BlivaForSequenceClassification",
+            "BlivaModel",
+            "BlivaPreTrainedModel",
+        ]
+    )
     _import_structure["models.albert"].extend(
         [
             "ALBERT_PRETRAINED_MODEL_ARCHIVE_LIST",
@@ -4209,6 +4223,7 @@ if TYPE_CHECKING:
         load_tf2_weights_in_pytorch_model,
     )
     from .models.albert import ALBERT_PRETRAINED_CONFIG_ARCHIVE_MAP, AlbertConfig
+    from .models.bliva import BLIVA_PRETRAINED_CONFIG_ARCHIVE_MAP, BlivaConfig, BlivaTokenizer
     from .models.align import (
         ALIGN_PRETRAINED_CONFIG_ARCHIVE_MAP,
         AlignConfig,
@@ -4839,6 +4854,7 @@ if TYPE_CHECKING:
         from .utils.dummy_tokenizers_objects import *
     else:
         # Fast tokenizers imports
+        from .models.bliva import BlivaTokenizerFast
         from .models.albert import AlbertTokenizerFast
         from .models.bart import BartTokenizerFast
         from .models.barthez import BarthezTokenizerFast
@@ -5053,6 +5069,16 @@ if TYPE_CHECKING:
         from .modeling_utils import PreTrainedModel
 
         # PyTorch model imports
+
+        from .models.bliva import (
+            BLIVA_PRETRAINED_MODEL_ARCHIVE_LIST,
+            BlivaForConditionalGeneration,
+            BlivaForCausalLM,
+            BlivaForQuestionAnswering,
+            BlivaForSequenceClassification,
+            BlivaModel,
+            BlivaPreTrainedModel,
+        )
         from .models.albert import (
             ALBERT_PRETRAINED_MODEL_ARCHIVE_LIST,
             AlbertForMaskedLM,
