@@ -16,7 +16,7 @@
 import unittest
 
 from transformers import is_torch_available, is_torchvision_available
-from transformers.bounding_box_utils import transform_box_format
+from transformers.bounding_box_utils import transform_box_format, BoundingBoxFormat
 from transformers.testing_utils import require_torch
 
 
@@ -32,6 +32,30 @@ if is_torchvision_available():
 _EPS = 1e-8
 
 
+samples = {"xywh": [[387, 441,  44,  9], [134,  57, 434, 383], [306, 274,  36, 154], [ 22, 252, 479,  56], [498, 349, 120,  79]],
+           "xyxy": [[387, 441, 431, 450.], [134,  57, 568, 440.], [306, 274, 342, 428.], [ 22, 252, 501, 308.], [498, 349, 618, 428]],
+           "xcycwh": [[409., 445.5,  44., 9.], [351., 248.5, 434., 383.], [324., 351.,  36., 154.], [261.5, 280., 479.,  56.], [558., 388.5, 120., 79.]],
+           "relative_xywh": [[0.6047, 0.9587, 0.0688 , 0.0196], [0.2094, 0.1239, 0.6781, 0.8326], [0.4781, 0.5957, 0.05625 , 0.3348], [0.0344, 0.5478, 0.7484, 0.1217],[0.7781, 0.7587, 0.1875, 0.1717]],
+           "relative_xcycwh": [[0.6391,0.9685,0.0688,0.0196], [0.5484,0.5402,0.6781,0.8326], [0.5063,0.7630,0.0563,0.3348], [0.4086,0.6087,0.7484,0.1217], [0.8719,0.8446,0.1875,0.1717]]
+           }
+original_img_shape = [460, 640] 
+
+rel_formats = ("relative_xywh", "relative_xcycwh")
+
+for origin_format, bboxes in samples.items():
+    origin_format = BoundingBoxFormat(origin_format)
+    bboxes = torch.Tensor(bboxes)
+    
+    for dest_format, expected_bboxes in samples.items():
+        dest_format = BoundingBoxFormat(dest_format)
+        expected_bboxes = torch.Tensor(expected_bboxes)
+        img_shape = None
+        if dest_format in rel_formats or origin_format in rel_formats:
+            img_shape = original_img_shape
+        
+        result = transform_box_format(bboxes, orig_format=origin_format, dest_format=dest_format, img_shape=img_shape)
+        print(torch.allclose(result, expected_bboxes, atol=1e-4))
+    
 @require_torch
 class UtilBoundingBoxConverters(unittest.TestCase):
     def generate_rand_xy(self, image_height, image_width, total_samples, init_val=0):
@@ -180,3 +204,11 @@ class UtilBoundingBoxConverters(unittest.TestCase):
         assert torch.equal(transf_boxes_xcycwh, torch_transf_boxes_xcycwh)
         assert torch.equal(transf_boxes_xyxy, torch_transf_boxes_xyxy)
         assert torch.equal(transf_boxes_xywh, torch_transf_boxes_xywh)
+
+a = 123
+a = UtilBoundingBoxConverters()
+image_height = 460
+image_width = 640
+c = 123
+
+boxes_xywh = torch.Tensor(samples["xywh"])
